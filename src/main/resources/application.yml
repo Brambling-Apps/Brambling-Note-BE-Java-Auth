@@ -1,0 +1,16 @@
+server:
+  port: 8082
+
+spring:
+  config:
+    import: "consul:"
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        health-check-path: /health
+      config:
+        format: yaml
+  application:
+    name: brambling-note-auth
