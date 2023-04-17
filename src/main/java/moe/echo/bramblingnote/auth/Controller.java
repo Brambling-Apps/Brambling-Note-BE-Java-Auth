@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.nio.charset.StandardCharsets;
-
 @RestController
 public class Controller {
     @Autowired
@@ -22,7 +20,7 @@ public class Controller {
     }
 
     @GetMapping("/{email}")
-    public UserWithoutPassword get(@PathVariable String email, @RequestParam String password, HttpSession session) {
+    public UserWithoutPassword login(@PathVariable String email, @RequestParam String password, HttpSession session) {
         try {
             UserWithoutPassword result = userClient.getByEmailAndPassword(email, password);
             session.setAttribute("user", result);
@@ -32,5 +30,11 @@ public class Controller {
                     HttpStatusCode.valueOf(e.status()), e.contentUTF8()
             );
         }
+    }
+
+    @DeleteMapping("/")
+    public ResponseEntity<Object> logout(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok().build();
     }
 }
