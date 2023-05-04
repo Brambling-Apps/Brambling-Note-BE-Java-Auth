@@ -2,7 +2,7 @@ package moe.echo.bramblingnote.auth;
 
 import feign.FeignException;
 import jakarta.servlet.http.HttpSession;
-import moe.echo.bramblingnote.user.UserForSession;
+import moe.echo.bramblingnote.user.UserForReturn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +20,9 @@ public class Controller {
     }
 
     @GetMapping("/{email}")
-    public UserForSession login(@PathVariable String email, @RequestParam String password, HttpSession session) {
+    public UserForReturn login(@PathVariable String email, @RequestParam String password, HttpSession session) {
         try {
-            UserForSession result = userClient.getByEmailAndPassword(email, password);
+            UserForReturn result = userClient.getByEmailAndPassword(email, password);
             session.setAttribute("user", result);
             return result;
         } catch (FeignException e) {
