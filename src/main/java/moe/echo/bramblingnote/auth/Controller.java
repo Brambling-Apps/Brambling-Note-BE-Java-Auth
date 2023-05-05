@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpSession;
 import moe.echo.bramblingnote.user.UserForReturn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -15,8 +14,10 @@ public class Controller {
     private UserClient userClient;
 
     @RequestMapping("/health")
-    public ResponseEntity<Object> health() {
-        return ResponseEntity.ok().build();
+    public MessageJson health() {
+        MessageJson message = new MessageJson();
+        message.setMessage("ok");
+        return message;
     }
 
     @GetMapping("/{email}")
@@ -33,8 +34,10 @@ public class Controller {
     }
 
     @DeleteMapping("/")
-    public ResponseEntity<Object> logout(HttpSession session) {
+    public MessageJson logout(HttpSession session) {
         session.invalidate();
-        return ResponseEntity.ok().build();
+        MessageJson message = new MessageJson();
+        message.setMessage("ok");
+        return message;
     }
 }
