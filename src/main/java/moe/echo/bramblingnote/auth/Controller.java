@@ -1,8 +1,13 @@
 package moe.echo.bramblingnote.auth;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import feign.FeignException;
 import jakarta.servlet.http.HttpSession;
-import moe.echo.bramblingnote.user.UserForReturn;
+import moe.echo.bramblingnote.user.UserDto;
+import moe.echo.bramblingnote.user.View;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +26,20 @@ public class Controller {
     }
 
     @GetMapping("/{email}")
-    public UserForReturn login(@PathVariable String email, @RequestParam String password, HttpSession session) {
+    @JsonView(View.ViewOnly.class)
+    public UserDto login(@PathVariable String email, @RequestParam String password, HttpSession session) {
         try {
-            UserForReturn result = userClient.getByEmailAndPassword(email, password);
-            session.setAttribute("user", result);
+            UserDto result = userClient.getByEmailAndPassword(email, password);
+            ObjectWriter writer = new ObjectMapper().writerWithDefaultPrettyPrinter();
+            session.setAttribute("user", writer.writeValueAsString(result));
             return result;
         } catch (FeignException e) {
             throw new ResponseStatusException(
-                    HttpStatusCode.valueOf(e.status()), e.contentUTF8()
+                    HttpStatusCode.valueOf(500), e.contentUTF8()
+            );
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(
+                    HttpStatusCode.valueOf(500), e.getMessage()
             );
         }
     }
