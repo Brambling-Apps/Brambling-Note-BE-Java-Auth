@@ -8,6 +8,7 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpSession;
 import moe.echo.bramblingnote.user.UserDto;
 import moe.echo.bramblingnote.user.View;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,11 +22,8 @@ public class Controller {
     }
 
     @RequestMapping("/health")
-    public MessageJson health() {
-        MessageJson message = new MessageJson();
-        message.setMessage("ok");
-        return message;
-    }
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void health() {}
 
     @GetMapping("/{email}")
     @JsonView(View.ViewOnly.class)
@@ -47,10 +45,8 @@ public class Controller {
     }
 
     @DeleteMapping("/")
-    public MessageJson logout(HttpSession session) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(HttpSession session) {
         session.invalidate();
-        MessageJson message = new MessageJson();
-        message.setMessage("ok");
-        return message;
     }
 }
