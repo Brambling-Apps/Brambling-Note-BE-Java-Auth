@@ -8,15 +8,17 @@ import feign.FeignException;
 import jakarta.servlet.http.HttpSession;
 import moe.echo.bramblingnote.user.UserDto;
 import moe.echo.bramblingnote.user.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class Controller {
-    @Autowired
-    private UserClient userClient;
+    private final UserClient userClient;
+
+    public Controller(UserClient userClient) {
+        this.userClient = userClient;
+    }
 
     @RequestMapping("/health")
     public MessageJson health() {
