@@ -30,7 +30,7 @@ public class Controller {
     public UserDto login(@PathVariable String email, @RequestParam String password, HttpSession session) {
         try {
             UserDto result = userClient.getByEmailAndPassword(email, password);
-            ObjectWriter writer = new ObjectMapper().writerWithDefaultPrettyPrinter();
+            ObjectWriter writer = new ObjectMapper().writerWithView(View.ViewOnly.class);
             session.setAttribute("user", writer.writeValueAsString(result));
             return result;
         } catch (FeignException e) {
