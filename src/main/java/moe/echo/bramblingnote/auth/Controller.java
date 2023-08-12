@@ -29,17 +29,23 @@ public class Controller {
     @JsonView(View.ViewOnly.class)
     public UserDto login(@PathVariable String email, @RequestParam String password, HttpSession session) {
         try {
-            UserDto result = userClient.getByEmailAndPassword(email, password);
+            UserDto user = userClient.getByEmailAndPassword(email, password);
             ObjectWriter writer = new ObjectMapper().writerWithView(View.ViewOnly.class);
-            session.setAttribute("user", writer.writeValueAsString(result));
-            return result;
+            session.setAttribute("user", writer.writeValueAsString(user));
+            return user;
         } catch (FeignException e) {
+            if (e.status() == 401) {
+                throw new ResponseStatusException(
+                        HttpStatusCode.valueOf(e.status()), "The email or password is incorrect."
+                );
+            }
+
             throw new ResponseStatusException(
-                    HttpStatusCode.valueOf(500), e.contentUTF8()
+                    HttpStatusCode.valueOf(e.status()), e.getMessage()
             );
         } catch (JsonProcessingException e) {
             throw new ResponseStatusException(
-                    HttpStatusCode.valueOf(500), e.getMessage()
+                    HttpStatusCode.valueOf(500), "Failed to parse user to string."
             );
         }
     }
